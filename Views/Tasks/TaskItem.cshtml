@@ -1,0 +1,28 @@
+﻿@model Data.Entities.ToDoTask
+@{
+	<div class="task-item" data-task-id="@Model.Id">
+		<h3 class="title">@Model.Title</h3>
+		<span class="created-date">@Model.CreatedDate</span>
+		@{
+			if (Model.IsCompleted)
+			{
+				<span class="completed-badge">Completed</span>
+			}
+		}
+
+		<div class=" btns">
+			@{
+				if (Model.IsCompleted == false)
+				{
+					<button class="btn btn-mark-completed  btn-primary" type="button">Mark as completed</button>
+				}
+			}
+			<button type="button" class="btn btn-delete  btn-primary">
+				<i class="bi bi-x-circle"></i>
+			</button>
+			<button type="button" class="btn btn-edit  btn-primary">
+				<i class="bi bi-pencil-square"></i>
+			</button>
+		</div>
+	</div>
+}

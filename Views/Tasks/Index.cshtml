@@ -1,0 +1,185 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model List<Data.Entities.ToDoTask>
+@{
+	ViewData["Title"] = "Tasks";
+}
+
+<div class="container">
+	<form class="form-inline" id="add-task-form">
+		<div class="row">
+			<div class="col-10">
+				<input class="form-control" min="3" placeholder="Enter task title..." name="title" type="text" required/>
+			</div>
+			<div class="col-2">
+				<button class="btn btn-outline-dark" type="submit">Add</button>
+			</div>
+		</div>
+	</form>
+
+	<div class="tasks-list">
+		@{
+			for (int i = 0; i < Model.Count; i++)
+			{
+				@await Html.PartialAsync("TaskItem", Model[i]);
+			}
+		}
+	</div>
+</div>
+
+@section TasksScripts
+{
+	<script>
+		function unsubscribeTaskItemBtnHandlers() {
+			$('.task-item').each(function () {
+
+				$(this).off('click', '.btn-edit');
+				$(this).off('click', '.btn-delete');
+				$(this).off('click', '.btn-mark-completed');
+			});
+		}
+
+		function subscribeTaskItemBtnHandlers() {
+			$('.task-item').each(function (e) {
+				var taskId = $(this).data('task-id');
+				var taskView = this;
+
+				$(this).on('click',
+					'.btn-edit',
+					function () {
+						window.editTaskId = taskId;
+						var modal = document.getElementById("edit-task-modal");
+						$("#edit-task-modal").modal("show");
+						var title =  $(taskView).children(".title")[0].innerText;
+						$("#edit-task-form .title-field").val(title);
+						$("#edit-task-form .id-field").val(taskId);
+					});
+
+				$(this).on('click',
+					'.btn-delete',
+					function () {
+						var successHandler = function () { $(taskView).remove(); }
+						var errorHandler = function () {
+							$(taskView).children(".btns").children(".btn-delete").prop("disabled", false);
+						}
+						$(this).prop("disabled", true);
+						sendRequest("@Url.Action("Delete")", "DELETE", { id: taskId }, successHandler, errorHandler);
+					});
+
+				$(this).on('click',
+					'.btn-mark-completed',
+					function () {
+						$(this).prop("disabled", true);
+						var taskView = $(this).parent().parent()[0];
+						
+						var errorHandler = function() {
+							$(taskView).children(".btns").children(".btn-mark-completed").prop("disabled", false);
+						}
+						var successHandler = function() {
+							$(taskView).children(".btns").children(".btn-mark-completed").remove();
+
+							var completeBadge = document.createElement("span");
+							$(completeBadge).prop("class", "completed-badge");
+							completeBadge.innerText = "Completed";
+							$(completeBadge).appendTo(taskView);
+						}
+
+						sendRequest("@Url.Action("MarkCompleted")", "PATCH", { id: taskId }, successHandler, errorHandler);
+					});
+			});
+		}
+
+		function createTaskView(task) {
+			var taskView = document.createElement("div");
+			var title = document.createElement("h3");
+			var createdDateView = document.createElement("span");
+			var btnsContainer = document.createElement("div");
+			var btnMarkCompleted = document.createElement("button");
+			var btnDelete = document.createElement("button");
+			var btnEdit = document.createElement("button");
+
+			taskView.className = "task-item";
+			title.className = "title";
+			createdDateView.className = "created-date";
+			btnsContainer.className = "btns";
+			btnMarkCompleted.className = "btn btn-mark-completed btn-primary";
+			btnDelete.className = "btn btn-delete btn-primary";
+			btnEdit.className = "btn btn-edit btn-primary";
+
+			var iconDelete = document.createElement("i");
+			var iconEdit = document.createElement("i");
+
+			iconDelete.className = "bi bi-x-circle";
+			iconEdit.className = "bi bi-pencil-square";
+
+			$(iconDelete).prependTo(btnDelete);
+			$(iconEdit).prependTo(btnEdit);
+			btnMarkCompleted.innerText = "Mark as completed";
+
+			$(btnMarkCompleted).appendTo(btnsContainer);
+			$(btnDelete).appendTo(btnsContainer);
+			$(btnEdit).appendTo(btnsContainer);
+
+			title.innerText = task.title;
+			createdDateView.innerText = formatDate(new Date(task.createdDate));
+
+			$(title).appendTo(taskView);
+			$(createdDateView).appendTo(taskView);
+			$(btnsContainer).appendTo(taskView);
+			$(taskView).attr("data-task-id", task.id);
+
+			$(taskView).prependTo(".tasks-list");
+
+			unsubscribeTaskItemBtnHandlers();
+			subscribeTaskItemBtnHandlers();
+		}
+
+		function newTaskAddedHandler(result) {
+			createTaskView(result.value);
+			unsubscribeTaskItemBtnHandlers();
+			subscribeTaskItemBtnHandlers();
+		}
+
+		subscribeTaskItemBtnHandlers();
+
+		$("#add-task-form").on("submit",
+			function (e) {
+				e.preventDefault();
+				sendRequest("@Url.Action("Add")", "POST", { title: $("#add-task-form input").val() }, newTaskAddedHandler);
+				$("#add-task-form input").val("");
+			}
+		);
+	</script>
+}
+
+@section EditTaskModalScripts
+{
+	<script>
+		function editFormResponseHandler(result) {
+			var taskView = $(".task-item[data-task-id=" + result.id + "]")[0];
+			$(taskView).children(".title")[0].innerText = result.title;
+			$("#edit-task-modal").modal("hide");
+		}
+
+		function editFormFailedRequestHandler() {
+			$("#edit-task-modal").modal("hide");
+		}
+
+		$("#edit-task-form").on("submit",
+			function (e) {
+				e.preventDefault();
+				sendRequest(
+					"@Url.Action("Update")",
+					"PATCH",
+					{
+						title: $("#edit-task-form .title-field").val(),
+						id: $("#edit-task-form .id-field").val()
+					},
+					editFormResponseHandler,
+					editFormFailedRequestHandler
+				);
+				$("#edit-task-form input").val("");
+			}
+		);
+
+	</script>
+}

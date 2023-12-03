@@ -1,0 +1,24 @@
+﻿<div class="modal" tabindex="-1" id="edit-task-modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Edit title</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form class="form-inline" id="edit-task-form">
+					<div class="row">
+						<div class="col-10">
+							<input class="form-control title-field" min="3" placeholder="Enter task title..." name="title" type="text" required/>
+							<input class="form-control id-field" name="id" type="hidden" />
+						</div>
+						<div class="col-2">
+							<button class="btn btn-outline-dark" type="submit">Save</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer"></div>
+		</div>
+	</div>
+</div>

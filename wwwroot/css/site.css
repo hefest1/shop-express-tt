@@ -1,0 +1,112 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.hidden {
+    display: none;
+}
+
+.task-item {
+    box-shadow: rgba(0, 0, 0, .15) 0 0 10px 1px;
+    border-radius: 10px;
+    margin: 20px 0;
+    padding: 5px 15px;
+    position: relative;
+}
+
+.task-item .created-date {
+    font-size: 12px;
+}
+
+    .task-item .completed-badge {
+        background: rgba(0, 201, 0, .4);
+        color: black;
+        padding: 5px 7px;
+        border-radius: 0 10px 0 5px;
+        font-size: 12px;
+        text-transform: uppercase;
+        font-weight: 900;
+        letter-spacing: .5px;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+.task-item .btns {
+    padding: 10px 0;
+}
+
+.task-item .btns .btn {
+    display: inline-block;
+    width: auto;
+    height: auto;
+    margin: 0 10px;
+}
+
+.task-item .btns .btn:first-of-type {
+    margin-left: 0;
+}
+
+.task-item .btns .btn:last-of-type {
+    margin-left: 0;
+}
+
+#add-task-form .btn 
+{
+    width: 100%;
+}
+
+#notifications {
+    position: fixed;
+    right: 0;
+    height: auto;
+    width: 300px;
+    top: 0;
+    z-index: 9999;
+    padding: 10px;
+}
+
+.notification-item {
+    padding: 15px;
+    margin: 10px 0;
+    transition: .5s;
+    border-radius: 10px;
+    background: #edeff6;
+    color: black;
+    width: 100%;
+    marign-left: 300px;
+    animation: notification-arrive .5s ease-in-out;
+    box-shadow: rgba(0, 0, 0, .3) 0 0 10px 1px;
+}
+
+.notification-item p {
+    margin: 0;
+}
+
+@keyframes notification-arrive {
+    from {
+        margin-left: 300px;
+    }
+    to {
+        margin-left: 0;
+    }
+}
